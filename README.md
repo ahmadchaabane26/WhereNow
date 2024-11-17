@@ -1,5 +1,10 @@
 # Deploy WhereNow? - Vacation Search Web Application using CircleCI CI/CD Pipeline
 
+## Deployment Dashboards
+
+- **Heroku Dashboard**: [View Application](https://dashboard.heroku.com/apps/sleepy-dusk-19083)
+- **CircleCI Dashboard**: [View Pipeline](https://app.circleci.com/pipelines/github/ahmadchaabane26/WhereNow)
+
 ## Project Description
 
 WhereNow? is a travel search engine designed to help users discover destinations, accommodations, and activities tailored to their preferences. Users can input filters such as budget, location, climate, and interests like adventure, relaxation, or culture to receive curated travel suggestions.
