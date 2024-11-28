@@ -25,7 +25,7 @@ jobs:
           name: Run frontend tests
           working_directory: frontend
           command: |
-            npm test --passWithNoTests
+            npm test
 
       # Optional: Build the React app
       - run:
