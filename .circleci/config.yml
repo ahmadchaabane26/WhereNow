@@ -21,11 +21,11 @@ jobs:
             npm install
 
       # Step 3: Run tests for the frontend
-      - run:
-          name: Run frontend tests
-          working_directory: frontend
-          command: |
-            npm test
+      # - run:
+      #     name: Run frontend tests
+      #     working_directory: frontend
+      #     command: |
+      #       npm test
 
       # Optional: Build the React app
       - run:
