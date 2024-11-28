@@ -32,7 +32,6 @@ export default function Signup() {
             // Add user to Firestore
             await setDoc(doc(db, "users", user.uid), {
                 email: user.email,
-                role: "teacher", // Default role
                 createdAt: new Date().toISOString()
             });
 
