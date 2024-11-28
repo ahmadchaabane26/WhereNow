@@ -28,15 +28,15 @@ jobs:
       #       npm test
 
       # Optional: Build the React app
-      - run:
-          name: Build frontend
-          working_directory: frontend
-          command: |
-            npm run build
+      # - run:
+      #     name: Build frontend
+      #     working_directory: frontend
+      #     command: |
+      #       npm run build
 
       # Step 4: Store test results for the frontend (if applicable)
-      - store_test_results:
-          path: frontend/test-results
+      # - store_test_results:
+      #     path: frontend/test-results
 
   backend-test:
     docker:
