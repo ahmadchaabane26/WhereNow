@@ -1,38 +1,47 @@
 import React, { useRef, useState } from "react";
 import { Form, Button, Card, Alert } from "react-bootstrap";
 import { useAuth } from "../context/AuthContext";
-import firebase from "../firebase";
+import { getFirestore, doc, setDoc } from "firebase/firestore";
 import { Link, useNavigate } from "react-router-dom";
 
-export default function Login() {
+export default function Signup() {
     const emailRef = useRef();
     const passwordRef = useRef();
-    const { login } = useAuth();
+    const passwordConfirmRef = useRef();
+    const { signup } = useAuth();
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const db = getFirestore();
 
     const darkYellow = '#b58b00'; // Consistent color for both pages
 
     async function handleSubmit(e) {
         e.preventDefault();
 
+        if (passwordRef.current.value !== passwordConfirmRef.current.value) {
+            return setError("Passwords do not match");
+        }
+
         try {
             setError("");
             setLoading(true);
-            await login(emailRef.current.value, passwordRef.current.value);
+            const userCredential = await signup(emailRef.current.value, passwordRef.current.value);
+            const user = userCredential.user;
 
-            const user = firebase.auth().currentUser;
-            if (user) {
-                navigate(`/${user.uid}/dashboard`);
-            } else {
-                navigate('/');
-            }
-        } catch {
-            setError("Failed to log in");
+            // Add user to Firestore
+            await setDoc(doc(db, "users", user.uid), {
+                email: user.email,
+                role: "teacher", // Default role
+                createdAt: new Date().toISOString()
+            });
+
+            navigate("/login");
+        } catch (error) {
+            setError("Failed to create an account: " + error.message);
+        } finally {
+            setLoading(false);
         }
-
-        setLoading(false);
     }
 
     return (
@@ -52,7 +61,7 @@ export default function Login() {
                         letterSpacing: '2px',
                         fontWeight: '700',
                         animation: 'fade-in 1s ease-in-out'
-                    }}>WhereNow</h2>
+                    }}>Sign Up</h2>
                     {error && <Alert variant="danger">{error}</Alert>}
                     <Form onSubmit={handleSubmit}>
                         <Form.Group id="email">
@@ -63,6 +72,10 @@ export default function Login() {
                             <Form.Label>Password</Form.Label>
                             <Form.Control type="password" ref={passwordRef} required />
                         </Form.Group>
+                        <Form.Group id="password-confirm">
+                            <Form.Label>Password Confirmation</Form.Label>
+                            <Form.Control type="password" ref={passwordConfirmRef} required />
+                        </Form.Group>
                         <Button disabled={loading} className="w-100 mt-3" type="submit" style={{
                                 backgroundColor: darkYellow,
                                 borderColor: darkYellow,
@@ -71,16 +84,13 @@ export default function Login() {
                                 letterSpacing: '1px',
                                 transition: 'background-color 0.3s',
                             }}>
-                            Log In  
+                            Sign Up
                         </Button>
                     </Form>
-                    <div className="w-100 text-center mt-3">
-                        <Link to="/forgot-password" style={{ color: darkYellow }}>Forgot Password?</Link>
-                    </div>
                 </Card.Body>
             </Card>
             <div className="w-100 text-center mt-2">
-                Need an account? <Link to="/signup" style={{ color: darkYellow }}>Sign Up</Link>
+                Already have an account? <Link to="/login" style={{ color: darkYellow }}>Log In</Link>
             </div>
             <style>{`
                 @keyframes card-entry {
