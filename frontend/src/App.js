@@ -5,6 +5,16 @@ import AuthProvider from "./context/AuthContext";
 import Login from "./pages/login";
 import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/Frogotpassword";
+import { useAuth } from "./context/AuthContext";
+import Dashboard from "./pages/dashboard";
+import Saved from "./pages/saved";
+
+
+// Create a wrapper component for protected routes
+function PrivateRoute({ children }) {
+  const { currentUser } = useAuth();
+  return currentUser ? children : <Navigate to="/login" />;
+}
 
 
 function App() {
@@ -33,6 +43,16 @@ function App() {
                 <ForgotPassword />
               </div>
             </Container>
+          } />
+          <Route path="/:userId/dashboard" element={
+            <PrivateRoute>
+              <Dashboard />
+            </PrivateRoute>
+          } />
+          <Route path="/:userId/dashboard/saved" element={
+            <PrivateRoute>
+              <Saved />
+            </PrivateRoute>
           } />
         </Routes>
       </AuthProvider>
