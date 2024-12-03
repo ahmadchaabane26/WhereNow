@@ -19,7 +19,6 @@ function AppContent() {
   const { currentUser } = useAuth();
   const [preferences, setPreferences] = useState(null);
   const [savedItems, setSavedItems] = useState(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -29,7 +28,6 @@ function AppContent() {
 
         if (!idToken) {
           console.error("User not authenticated");
-          setLoading(false);
           return;
         }
 
@@ -49,10 +47,8 @@ function AppContent() {
         });
         setSavedItems(savedItemsResponse.data);
 
-        setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
-        setLoading(false);
       }
     };
 
@@ -61,9 +57,6 @@ function AppContent() {
     }
   }, [currentUser]);
 
-  if (loading) {
-    return <p>Loading data...</p>;
-  }
 
   return (
     <Routes>
