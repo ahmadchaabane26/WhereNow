@@ -1,11 +1,33 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Navbar, Nav, NavDropdown, Form, FormControl, Button, Container, Row, Col } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import Logout from "./logout";
+import { useAuth } from '../context/AuthContext';
+import { fetchPreferences } from '../api/user'; // API call function
 
 
 
 export default function Dashboard() {
+
+  const { idToken } = useAuth();
+
+  useEffect(() => {
+      const getPreferences = async () => {
+          if (!idToken) {
+              console.log("User not authenticated");
+              return;
+          }
+
+          try {
+              const preferences = await fetchPreferences(idToken);
+              console.log("User preferences:", preferences);
+          } catch (error) {
+              console.error("Error fetching preferences:", error);
+          }
+      };
+
+      getPreferences();
+  }, [idToken]);
   return (
     <div>
       {/* Navbar */}
