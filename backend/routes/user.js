@@ -5,6 +5,7 @@ const admin = require('firebase-admin');
 
 
 
+
 // Fetch user preferences
 router.get('/preferences', async (req, res) => {
     try {

@@ -17,46 +17,22 @@ function PrivateRoute({ children }) {
 
 function AppContent() {
   const { currentUser } = useAuth();
-  const [preferences, setPreferences] = useState(null);
-  const [savedItems, setSavedItems] = useState(null);
+  const [countries, setCountries] = useState([]); // State to store countries data
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Get the ID token from Firebase Authentication
-        const idToken = await currentUser?.getIdToken();
-
-        if (!idToken) {
-          console.error("User not authenticated");
-          return;
-        }
-
-        // Fetch user preferences
-        const preferencesResponse = await axios.get("http://localhost:3001/api/user/preferences", {
-          headers: {
-            Authorization: `Bearer ${idToken}`,
-          },
-        });
-        setPreferences(preferencesResponse.data);
-
-        // Fetch saved items (flights, hotels, activities)
-        const savedItemsResponse = await axios.get("http://localhost:3001/api/user/saved", {
-          headers: {
-            Authorization: `Bearer ${idToken}`,
-          },
-        });
-        setSavedItems(savedItemsResponse.data);
+        // Fetch countries
+        const countriesResponse = await axios.get("http://localhost:3001/api/cities");
+        setCountries(countriesResponse.data);
 
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
 
-    if (currentUser) {
-      fetchData();
-    }
+    fetchData();
   }, [currentUser]);
-
 
   return (
     <Routes>
@@ -116,7 +92,7 @@ function AppContent() {
         path="/:userId/dashboard"
         element={
           <PrivateRoute>
-            <Dashboard preferences={preferences} />
+            <Dashboard countries={countries} />
           </PrivateRoute>
         }
       />
@@ -124,7 +100,7 @@ function AppContent() {
         path="/:userId/dashboard/saved"
         element={
           <PrivateRoute>
-            <Saved savedItems={savedItems} />
+            <Saved />
           </PrivateRoute>
         }
       />
