@@ -7,20 +7,27 @@
 
 ## Project Description
 
-WhereNow? is a travel search engine designed to help users discover destinations, accommodations, and activities tailored to their preferences. Users can input filters such as budget, location, climate, and interests like adventure, relaxation, or culture to receive curated travel suggestions.
+WhereNow? is a travel search engine designed to help users discover destinations, accommodations, and activities tailored to their preferences. While the initial scope included implementing personalized travel itineraries, this version focuses on essential features, including saving and adding destinations, alongside user authentication.
 
 ### Key Features:
 
 - Dynamic user interface with real-time updates as users refine their search.
-- User accounts to save destinations and share personalized travel itineraries.
-- Aggregation of data from various travel sites for flights, hotels, activities, and packages.
+- User login and logout functionality with authentication for secure access.
+- Save and add destinations to user profiles.
+- Aggregation of data from various travel APIs for hotels, flights, and activities.
 - CI/CD automation for seamless updates using GitHub, CircleCI, and Heroku.
 
-The project leverages a cloud infrastructure and cutting-edge tools for deployment and data storage:
+The project leverages Firebase for backend services and data storage.
 
 - **Front-end**: React.js
 - **Back-end**: Node.js and Express.js
-- **Database**: AWS PostgreSQL
+- **Database**: Firebase Firestore
+
+### Integrated APIs:
+
+- **Hotel Search**: [Amadeus Hotel Search API](https://developers.amadeus.com/)
+- **Flight Search**: [API Ninja](https://api-ninjas.com/)
+- **Activities Search**: [Geoapify API](https://www.geoapify.com/)
 
 ## Team Members
 
@@ -32,20 +39,20 @@ The project leverages a cloud infrastructure and cutting-edge tools for deployme
 
 ## Tools and Technologies
 
-| Tool Type          | Tool           |
-| ------------------ | -------------- |
-| **Source Control** | GitHub         |
-| **Build and Test** | CircleCI       |
-| **Deployment**     | Heroku         |
-| **Programming**    | Node.js        |
-| **Database**       | AWS PostgreSQL |
+| Tool Type          | Tool               |
+| ------------------ | ------------------ |
+| **Source Control** | GitHub             |
+| **Build and Test** | CircleCI           |
+| **Deployment**     | Heroku             |
+| **Programming**    | Node.js            |
+| **Database**       | Firebase Firestore |
 
 ### Tool Justifications:
 
 - **GitHub**: Familiar platform for collaborative development and version control.
 - **CircleCI**: Integration with GitHub and Heroku simplifies CI/CD automation. Facilitates testing, building, and deployment in one streamlined workflow.
 - **Heroku**: Manages infrastructure, deployments, and scaling. Offers smooth integration with GitHub and CircleCI for continuous updates.
-- **AWS PostgreSQL**: A managed relational database solution that provides reliable, scalable, and secure data storage. Ideal for structured data with robust querying capabilities and better support for relational models than NoSQL databases.
+- **Firebase Firestore**: A scalable, NoSQL cloud database solution ideal for real-time data handling and synchronization. It simplifies backend configuration while offering secure storage.
 - **Node.js**: Efficient, high-performance backend framework that supports scalability and real-time data handling.
 
 ## Pipeline Workflow
@@ -59,14 +66,16 @@ The project leverages a cloud infrastructure and cutting-edge tools for deployme
 ## Milestones
 
 1. **Initial Setup and Infrastructure**:
-   - Configure GitHub, CircleCI, Heroku, and AWS PostgreSQL.
+   - Configure GitHub, CircleCI, Heroku, and Firebase.
 2. **Core Search Engine Development**:
    - Develop search functionality, integrate travel APIs, and build the front-end and back-end.
-3. **User Accounts and Personalization**:
-   - Enable user accounts, save destinations, and store preferences.
-4. **Testing and Continuous Deployment**:
+3. **Save and Add Features**:
+   - Enable users to save and add destinations to their profile.
+4. **Authentication**:
+   - Implement secure login and logout functionality.
+5. **Testing and Continuous Deployment**:
    - Implement automated tests and ensure CI/CD pipeline reliability.
-5. **Final Deployment and Launch**:
+6. **Final Deployment and Launch**:
    - Deploy to production and launch for public use.
 
 ## Challenges
@@ -79,6 +88,4 @@ The project leverages a cloud infrastructure and cutting-edge tools for deployme
 
 ## Conclusion
 
-WhereNow? is a personalized travel search platform that leverages DevOps principles for automation and efficiency. With CI/CD pipelines using GitHub, CircleCI, and Heroku, the platform emphasizes continuous improvement and fast deployments. Powered by Node.js and AWS PostgreSQL, WhereNow? is designed for scalability and an enhanced user experience.
-
----
+WhereNow? is a travel search platform that emphasizes efficiency and automation through CI/CD pipelines using GitHub, CircleCI, and Heroku. This version highlights secure user authentication, along with save and add features for destinations. Powered by Node.js and Firebase Firestore, WhereNow? delivers a reliable and scalable user experience.
