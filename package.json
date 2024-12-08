@@ -2,13 +2,12 @@
     "name": "wherenow",
     "version": "1.0.0",
     "description": "Vacation search web application",
-    "main": "backend/server.js",
+    "main": "App.js",
     "scripts": {
         "start": "node backend/server.js",
         "test": "jest --passWithNoTests"
     },
     "dependencies": {
-        "express": "^4.21.2",
         "firebase": "^11.0.2",
         "react": "^18.3.1",
         "react-bootstrap": "^2.10.6",
