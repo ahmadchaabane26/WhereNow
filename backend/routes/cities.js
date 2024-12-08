@@ -1,7 +1,8 @@
 const axios = require('axios');
+require('dotenv').config();
+
 
 const API_URL = 'https://api.api-ninjas.com/v1/city';
-const API_KEY = 'QtvCg7uG1IRkmM+lcW0KPg==9qf3IBovMINkWoTY'; // Replace with your API key
 
 /**
  * Fetch cities in the US with optional parameters for filtering and pagination.
@@ -36,7 +37,7 @@ const fetchUSCities = async ({
     const response = await axios.get(API_URL, {
       params,
       headers: {
-        'X-Api-Key': API_KEY,
+        'X-Api-Key': process.env.CITIES_API_KEY,
       },
     });
 

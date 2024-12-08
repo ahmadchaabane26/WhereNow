@@ -5,12 +5,19 @@ grant_type=client_credentials&client_id=FyEV4kSEgbsfzFAat52AO4KiuYrFFtFg&client_
 
 ###
 
-GET https://test.api.amadeus.com/v2/shopping/flight-offers?originLocationCode=NYC&destinationLocationCode=LA&departureDate=2024-12-20&adults=1
-Authorization: Bearer ZfzD0WcsfFKRYVZbgmAyFxVUXU1q
+GET https://test.api.amadeus.com/v2/shopping/flight-offers?originLocationCode=NYC&destinationLocationCode=LAX&departureDate=2024-12-20&adults=1
+Authorization: Bearer G30T8ubtisAyFNO6ZhOtl54C7Z7y
 
 ###
 GET https://restcountries.com/v3.1/all?fields=name,cca2,flags
 
 
+
 ###
-GET http://localhost:3001/api/flights?origin=AI&destination=AO
+GET https://test.api.amadeus.com/v1/reference-data/locations/hotels/by-city?cityCode=NYC
+Authorization: Bearer kZIXibMsWoD1dTePFcaMkMgKiWwO
+
+
+###
+GET https://test.api.amadeus.com/v3/shopping/hotel-offers?hotelIds=MCLONGHM&adults=1&checkInDate=2024-12-22&paymentPolicy=NONE&roomQuantity=1
+Authorization: Bearer kZIXibMsWoD1dTePFcaMkMgKiWwO
