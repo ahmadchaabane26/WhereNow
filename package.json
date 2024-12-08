@@ -8,7 +8,7 @@
         "test": "jest --passWithNoTests"
     },
     "dependencies": {
-        "express": "^4.17.1",
+        "express": "^4.21.2",
         "firebase": "^11.0.2",
         "react": "^18.3.1",
         "react-bootstrap": "^2.10.6",
