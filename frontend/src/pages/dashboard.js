@@ -3,6 +3,9 @@ import { Navbar, Nav, NavDropdown, FormControl, Button, Container, Row, Col, Tab
 import { Link } from 'react-router-dom';
 import Logout from "./logout";
 import axios from 'axios';
+import {db, auth} from "../firebase";
+import { doc, setDoc, arrayUnion } from "firebase/firestore";
+
 
 export default function Dashboard() {
   const [filter, setFilter] = useState('flights'); // Active filter (default: flights)
@@ -95,6 +98,34 @@ export default function Dashboard() {
     } catch (error) {
       console.error(`Error fetching ${filter}:`, error.response?.data || error.message);
       setSearchError(`Failed to fetch ${filter}. Please try again.`);
+    }
+  };
+
+  const handleSave = async (item, type) => {
+    const userId = auth.currentUser?.uid; // Retrieve the authenticated user's ID
+  
+    if (!userId) {
+      alert("You need to log in to save items.");
+      return;
+    }
+  
+    try {
+      // Create a reference to the user's document in Firestore
+      const userDocRef = doc(db, "users", userId);
+  
+      // Save the item to the corresponding field (e.g., savedFlights, savedHotels, savedActivities)
+      await setDoc(
+        userDocRef,
+        {
+          [`saved${type}`]: arrayUnion(item),
+        },
+        { merge: true } // Merge with existing data instead of overwriting
+      );
+  
+      alert(`${type} saved successfully!`);
+    } catch (error) {
+      console.error(`Error saving ${type}:`, error.message);
+      alert(`Failed to save ${type}.`);
     }
   };
 
@@ -279,7 +310,6 @@ export default function Dashboard() {
                 <th>Price</th>
                 <th>Departure</th>
                 <th>Arrival</th>
-                <th>Flight Number</th>
               </>
             )}
             {filter === 'hotels' && (
@@ -306,7 +336,9 @@ export default function Dashboard() {
                   <td>${item.price}</td>
                   <td>{new Date(item.departure).toLocaleString()}</td>
                   <td>{new Date(item.arrival).toLocaleString()}</td>
-                  <td>{item.flightNumber || 'N/A'}</td>
+                  <td>
+                  <Button onClick={() => handleSave(item, 'Flights')}>Save</Button>
+                  </td>
                 </>
               )}
               {filter === 'hotels' && (
@@ -317,12 +349,18 @@ export default function Dashboard() {
                   <td>
                     {item.price} ({item.currency})
                   </td>
+                  <td> 
+                  <Button onClick={() => handleSave(item, 'Hotels')}>Save</Button>
+                  </td>
                 </>
               )}
               {filter === 'activities' && (
                 <>
                   <td>{item.name}</td>
                   <td>{item.category}</td>
+                  <td>
+                    <Button onClick={() => handleSave(item, 'Activities')}>Save</Button>
+                  </td>
                 </>
               )}
             </tr>

@@ -1,7 +1,7 @@
 const express = require('express');
 const axios = require('axios');
 const router = express.Router();
-const GEOAPIFY_API_KEY = 'da6882e372354f72853c683ca0d2f2ce';
+const GEOAPIFY_API_KEY = process.env.ACTIVITIES_API_KEY;
 
 router.get('/', async (req, res) => {
   const { city } = req.query;
@@ -29,7 +29,6 @@ router.get('/', async (req, res) => {
       params: {
         categories: 'tourism.attraction',
         filter: `place:${placeId}`,
-        limit: 20,
         apiKey: GEOAPIFY_API_KEY,
       },
     });
