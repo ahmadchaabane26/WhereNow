@@ -21,3 +21,7 @@ Authorization: Bearer kZIXibMsWoD1dTePFcaMkMgKiWwO
 ###
 GET https://test.api.amadeus.com/v3/shopping/hotel-offers?hotelIds=MCLONGHM&adults=1&checkInDate=2024-12-22&paymentPolicy=NONE&roomQuantity=1
 Authorization: Bearer kZIXibMsWoD1dTePFcaMkMgKiWwO
+
+
+###
+GET https://api.geoapify.com/v1/geocode/search?country=US&city=NewYork&apiKey=da6882e372354f72853c683ca0d2f2ce

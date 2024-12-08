@@ -6,7 +6,8 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const flightRoutes = require('./routes/flights');
 const { fetchUSCities } = require('./routes/cities');
-const hotelOffers  = require('./routes/hotels')
+const hotelOffers  = require('./routes/hotels');
+const activitiesRoute  = require('./routes/activities');
 
 const app = express();
 
@@ -46,6 +47,7 @@ app.get('/api/cities', async (req, res) => {
 // Flights route
 app.use('/api/flights', flightRoutes);
 app.use('/api/hotels', hotelOffers);
+app.use('/api/activities', activitiesRoute)
 
 // Health check endpoint
 app.get('/', (req, res) => {

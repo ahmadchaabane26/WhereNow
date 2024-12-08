@@ -293,8 +293,8 @@ export default function Dashboard() {
             {filter === 'activities' && (
               <>
                 <th>Activity Name</th>
-                <th>Details</th>
-                <th>Price</th>
+                <th>Address</th>
+                <th>category</th>
               </>
             )}
           </tr>
@@ -322,9 +322,9 @@ export default function Dashboard() {
               )}
               {filter === 'activities' && (
                 <>
-                  <td>{item.name || 'N/A'}</td>
-                  <td>{item.details || 'N/A'}</td>
-                  <td>${item.price || 'N/A'}</td>
+                  <td>{item.name}</td>
+                  <td>{item.street || "Location not available"}</td>
+                  <td>{item.category}</td>
                 </>
               )}
             </tr>
