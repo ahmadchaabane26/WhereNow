@@ -12,7 +12,6 @@ jobs:
     steps:
       - checkout
       - run: npm install
-      - run: git push heroku main
 workflows:
   version: 2
   build-and-deploy:
