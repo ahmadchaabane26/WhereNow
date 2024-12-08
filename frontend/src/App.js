@@ -17,7 +17,7 @@ function PrivateRoute({ children }) {
 
 function AppContent() {
   const { currentUser } = useAuth();
-  const [countries, setCountries] = useState([]); // State to store countries data
+  const [countries, setCountries] = useState([]); // State to store countries 
 
   useEffect(() => {
     const fetchData = async () => {
