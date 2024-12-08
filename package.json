@@ -2,7 +2,7 @@
     "name": "wherenow",
     "version": "1.0.0",
     "description": "Vacation search web application",
-    "main": "index.js",
+    "main": "backend/server.js",
     "scripts": {
         "start": "node backend/server.js",
         "test": "jest --passWithNoTests"
