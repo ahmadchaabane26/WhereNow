@@ -293,7 +293,6 @@ export default function Dashboard() {
             {filter === 'activities' && (
               <>
                 <th>Activity Name</th>
-                <th>Address</th>
                 <th>category</th>
               </>
             )}
@@ -323,7 +322,6 @@ export default function Dashboard() {
               {filter === 'activities' && (
                 <>
                   <td>{item.name}</td>
-                  <td>{item.street || "Location not available"}</td>
                   <td>{item.category}</td>
                 </>
               )}
