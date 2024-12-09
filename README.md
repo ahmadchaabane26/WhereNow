@@ -28,6 +28,7 @@ The project leverages Firebase for backend services and data storage.
 - **Hotel Search**: [Amadeus Hotel Search API](https://developers.amadeus.com/)
 - **Flight Search**: [API Ninja](https://api-ninjas.com/)
 - **Activities Search**: [Geoapify API](https://www.geoapify.com/)
+- **Cities Search**: [Api Ninja](https://api.api-ninjas.com/v1/city)
 
 ## Team Members
 
