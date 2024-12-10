@@ -5,6 +5,7 @@ import Logout from "./logout";
 import axios from 'axios';
 import {db, auth} from "../firebase";
 import { doc, setDoc, arrayUnion } from "firebase/firestore";
+import cityToIATA from './cityToIATA.json';
 
 
 export default function Dashboard() {
@@ -56,8 +57,8 @@ export default function Dashboard() {
         setValidationError('All fields are required for hotels');
         return;
       }
-      if (checkInDate === checkOutDate){
-        setValidationError('Check in date and checkout date can not be the same');
+      if (checkInDate === checkOutDate) {
+        setValidationError('Check-in date and checkout date cannot be the same');
         return;
       }
     } else if (filter === 'activities') {
@@ -75,29 +76,41 @@ export default function Dashboard() {
         activities: 'http://localhost:3001/api/activities',
       };
       const params = {};
-      
+
+      // Format date to ISO format
       const formatDate = (date) => {
         const [year, month, day] = new Date(date).toISOString().split('T')[0].split('-');
         return `${year}-${month}-${day}`;
       };
+
       // Build the parameters dynamically based on the filter
       if (filter === 'flights') {
         params.origin = origin;
         params.destination = destination;
         params.date = departureDate;
       } else if (filter === 'hotels') {
-        params.city = city;
+        const cityCode = cityToIATA[city];
+        if (!cityCode) {
+          setValidationError('Selected city is not supported');
+          return;
+        }
+        params.cityCode = cityCode; // Use cityCode directly
         params.checkInDate = formatDate(checkInDate);
         params.checkOutDate = formatDate(checkOutDate);
       } else if (filter === 'activities') {
-        params.city = city;
+        const cityCode = cityToIATA[city];
+        if (!cityCode) {
+          setValidationError('Selected city is not supported');
+          return;
+        }
+        params.cityCode = cityCode; // Use cityCode directly
       }
 
       const response = await axios.get(endpointMap[filter], { params });
       setData(response.data); // Update results
     } catch (error) {
       console.error(`Error fetching ${filter}:`, error.response?.data || error.message);
-      setSearchError(`Failed to fetch ${filter}. Please try again.`);
+      setSearchError(error.response?.data?.error || `Failed to fetch ${filter}. Please try again.`);
     }
   };
 
@@ -317,7 +330,8 @@ export default function Dashboard() {
                 <th>Hotel Name</th>
                 <th>Check-In</th>
                 <th>Check-Out</th>
-                <th>Price (Currency)</th>
+                <th>Total Price (Currency)</th>
+                <th> Price per Night</th>
               </>
             )}
             {filter === 'activities' && (
@@ -348,6 +362,18 @@ export default function Dashboard() {
                   <td>{item.checkOut || 'N/A'}</td>
                   <td>
                     {item.price} ({item.currency})
+                  </td>
+                  <td>
+                    {/* Calculate price per night */}
+                    {item.price && item.checkIn && item.checkOut
+                      ? (
+                        (item.price / (
+                          Math.abs(new Date(item.checkOut) - new Date(item.checkIn)) /
+                          (1000 * 60 * 60 * 24)
+                        ))
+                          .toFixed(2) + ` (${item.currency})`
+                      )
+                      : 'N/A'}
                   </td>
                   <td> 
                   <Button onClick={() => handleSave(item, 'Hotels')}>Save</Button>

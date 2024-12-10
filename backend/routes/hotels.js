@@ -1,11 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const axios = require('axios');
-const cityToIATA = require('./cityToIATA.json'); // Import the city-to-IATA mapping file
 require('dotenv').config();
 
 /**
- * Helper function to fetch an access token from Amadeus API
+ * Fetch an access token from Amadeus API
  */
 const getAccessToken = async () => {
   try {
@@ -22,173 +21,97 @@ const getAccessToken = async () => {
     );
     return response.data.access_token;
   } catch (error) {
-    console.error('Error fetching access token:', error.response?.data || error.message);
+    console.error('Error fetching access token:', error.message);
     throw new Error('Failed to fetch access token');
   }
 };
 
 /**
- * Helper function to chunk an array into smaller batches
+ * Fetch hotel IDs by city code
  */
-const chunkArray = (array, size) => {
-  const chunks = [];
-  for (let i = 0; i < array.length; i += size) {
-    chunks.push(array.slice(i, i + size));
-  }
-  return chunks;
-};
+const fetchHotelIdsByCity = async (cityCode) => {
+  try {
+    const accessToken = await getAccessToken();
+    const response = await axios.get('https://test.api.amadeus.com/v1/reference-data/locations/hotels/by-city', {
+      headers: { Authorization: `Bearer ${accessToken}` },
+      params: { cityCode },
+    });
 
-/**
- * Helper function to add a delay
- */
-const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-/**
- * Fetch hotel IDs for a given city code
- */
-const fetchHotelIds = async (cityCode) => {
-  const maxRetries = 3;
-  let attempts = 0;
-
-  while (attempts < maxRetries) {
-    try {
-      const accessToken = await getAccessToken();
-      const response = await axios.get(
-        'https://test.api.amadeus.com/v1/reference-data/locations/hotels/by-city',
-        {
-          headers: { Authorization: `Bearer ${accessToken}` },
-          params: { cityCode },
-        }
-      );
-
-      return response.data.data.map((hotel) => hotel.hotelId);
-    } catch (error) {
-      attempts++;
-
-      if (attempts >= maxRetries || error.response?.status !== 500) {
-        console.error('Error in fetchHotelIds:', error.response?.data || error.message);
-        throw new Error('Failed to fetch hotel IDs');
-      }
-
-      console.log(`Retrying fetchHotelIds... Attempt ${attempts}/${maxRetries}`);
-      await new Promise((resolve) => setTimeout(resolve, attempts * 1000)); // Exponential backoff
-    }
+    const hotelIds = response.data.data.map((hotel) => hotel.hotelId);
+    console.log(`Fetched ${hotelIds.length} hotel IDs for cityCode: ${cityCode}`);
+    return hotelIds;
+  } catch (error) {
+    console.error('Error in fetchHotelIdsByCity:', error.response?.data || error.message);
+    throw new Error('Failed to fetch hotel IDs');
   }
 };
-
-
-const validateHotelIdFormat = (hotelId) => {
-  const validPattern = /^[A-Z0-9]{6,}$/; // Adjust based on known ID format
-  return validPattern.test(hotelId);
-};
-
-const validateHotelIds = async (hotelIds) => {
-  const validHotelIds = [];
-  const invalidHotelIds = [];
-
-  for (const hotelId of hotelIds) {
-    try {
-      const accessToken = await getAccessToken();
-      await axios.get(
-        'https://test.api.amadeus.com/v3/shopping/hotel-offers',
-        {
-          headers: { Authorization: `Bearer ${accessToken}` },
-          params: { hotelIds: hotelId },
-        }
-      );
-      validHotelIds.push(hotelId);
-    } catch (error) {
-      console.error(`Invalid hotelId: ${hotelId}`, error.response?.data || error.message);
-      invalidHotelIds.push(hotelId);
-    }
-  }
-
-  console.log('Invalid Hotel IDs:', invalidHotelIds);
-  return validHotelIds;
-};
-
-
 
 /**
  * Fetch hotel offers for given hotel IDs and dates
  */
-const fetchHotels = async (hotelIds, checkInDate, checkOutDate) => {
-  const validHotelIds = await validateHotelIds(hotelIds);
+const fetchHotelOffers = async (hotelIds, checkInDate, checkOutDate) => {
+  try {
+    const accessToken = await getAccessToken();
+    const chunkSize = 50; // Adjust to avoid URI limits
+    const hotelOffers = [];
 
-  if (validHotelIds.length === 0) {
-    console.log('No valid hotel IDs available.');
-    return [];
-  }
+    for (let i = 0; i < hotelIds.length; i += chunkSize) {
+      const chunk = hotelIds.slice(i, i + chunkSize);
+      const response = await axios.get('https://test.api.amadeus.com/v3/shopping/hotel-offers', {
+        headers: { Authorization: `Bearer ${accessToken}` },
+        params: {
+          hotelIds: chunk.join(','), // Combine IDs into a comma-separated string
+          checkInDate,
+          checkOutDate,
+          adults: 1,
+        },
+      });
 
-  const hotelOffers = [];
-  for (const hotelId of validHotelIds) {
-    try {
-      const accessToken = await getAccessToken();
-      const response = await axios.get(
-        'https://test.api.amadeus.com/v3/shopping/hotel-offers',
-        {
-          headers: { Authorization: `Bearer ${accessToken}` },
-          params: {
-            hotelIds: hotelId,
-            checkInDate,
-            checkOutDate,
-            adults: 1,
-          },
-        }
-      );
-
-      hotelOffers.push(response.data.data[0]); // Add first hotel offer to results
-    } catch (error) {
-      console.error(`Error fetching offers for ${hotelId}:`, error.response?.data || error.message);
+      if (response.data && response.data.data) {
+        hotelOffers.push(
+          ...response.data.data.map((hotel) => ({
+            name: hotel.hotel.name,
+            checkIn: hotel.offers[0]?.checkInDate,
+            checkOut: hotel.offers[0]?.checkOutDate,
+            price: hotel.offers[0]?.price.total,
+            currency: hotel.offers[0]?.price.currency,
+          }))
+        );
+      }
     }
+
+    return hotelOffers;
+  } catch (error) {
+    console.error('Error in fetchHotelOffers:', error.response?.data || error.message);
+    throw new Error('Failed to fetch hotel offers');
   }
-
-  return hotelOffers;
 };
-
-
-
-
 
 /**
  * Main route to fetch hotels
  */
 router.get('/', async (req, res) => {
   try {
-    const { city, checkInDate, checkOutDate } = req.query;
+    const { cityCode, checkInDate, checkOutDate } = req.query;
+    console.log('Received parameters:', { cityCode, checkInDate, checkOutDate });
 
-    if (!city || !checkInDate || !checkOutDate) {
-      return res.status(400).json({ error: 'City, check-in date, and check-out date are required' });
+    if (!cityCode || !checkInDate || !checkOutDate) {
+      return res.status(400).json({ error: 'City code, check-in date, and check-out date are required' });
     }
 
-    const cityCode = cityToIATA[city];
-    if (!cityCode) {
-      return res.status(400).json({ error: 'Invalid city name' });
-    }
-
-    const hotelIds = await fetchHotelIds(cityCode);
+    // Step 1: Fetch hotel IDs for the city
+    const hotelIds = await fetchHotelIdsByCity(cityCode);
     if (hotelIds.length === 0) {
       return res.status(404).json({ error: 'No hotels found for the specified city' });
     }
 
-    const validHotelIds = await validateHotelIds(hotelIds);
-
-    if (validHotelIds.length === 0) {
-      return res.status(404).json({ error: 'No valid hotel IDs found' });
-    }
-
-    const hotelOffers = await fetchHotels(validHotelIds, checkInDate, checkOutDate);
-
-    res.json({ hotels: hotelOffers });
+    // Step 2: Fetch hotel offers for the IDs
+    const hotels = await fetchHotelOffers(hotelIds, checkInDate, checkOutDate);
+    res.json(hotels);
   } catch (error) {
     console.error('Error in /api/hotels route:', error.message, error.response?.data || '');
-    res.status(500).json({ error: 'Failed to fetch hotel IDs. Please try again later.' });
+    res.status(500).json({ error: 'Failed to fetch hotel data' });
   }
 });
-
-
-
-
-
 
 module.exports = router;
