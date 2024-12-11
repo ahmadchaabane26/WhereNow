@@ -42,23 +42,23 @@ export default function Saved() {
   const handleUnsave = async (item, type) => {
     try {
       const userRef = doc(db, 'users', userId);
+  
+      // Remove the item from the database
       await updateDoc(userRef, {
         [type]: arrayRemove(item),
       });
-
-      // Update local state
-      setSavedData((prev) => ({
-        ...prev,
-        [type]: prev[type].filter((savedItem) => savedItem.id !== item.id), // Ensure `id` exists on each item
-      }));
-
+  
+      // Refetch updated data to reflect changes
+      await Saved();
+  
       alert(`${type.slice(5)} unsaved successfully!`);
     } catch (error) {
       console.error(`Error unsaving ${type}:`, error.message);
       alert(`Failed to unsave ${type.slice(5)}.`);
     }
-  };
-
+  }
+  
+  
   return (
     <div>
       {/* Navbar */}
@@ -134,7 +134,6 @@ export default function Saved() {
                         <th>Price</th>
                         <th>Departure</th>
                         <th>Arrival</th>
-                        <th>Flight Number</th>
                         <th>Actions</th>
                       </>
                     )}
@@ -171,7 +170,6 @@ export default function Saved() {
                           <td>${item.price}</td>
                           <td>{item.departure}</td>
                           <td>{item.arrival}</td>
-                          <td>{item.flightNumber}</td>
                           <td>
                             <Button
                               variant="danger"

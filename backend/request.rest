@@ -35,4 +35,4 @@ GET http://localhost:3001/api/hotels?cityCode=ORD&checkInDate=2024-12-25&checkOu
 GET http://localhost:3001/api/activities?city=Chicago
 
 ### 
-GET http://localhost:3001/api/activities?cityCode=ORD
+GET http://localhost:3001/api/hotels?cityCode=NYC&checkInDate=2024-12-25&checkOutDate=2024-12-28

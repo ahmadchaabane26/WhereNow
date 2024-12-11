@@ -52,32 +52,45 @@ const fetchHotelIdsByCity = async (cityCode) => {
 const fetchHotelOffers = async (hotelIds, checkInDate, checkOutDate) => {
   try {
     const accessToken = await getAccessToken();
-    const chunkSize = 50; // Adjust to avoid URI limits
+    const chunkSize = 50; // Adjust chunk size
     const hotelOffers = [];
+    const errors = [];
 
     for (let i = 0; i < hotelIds.length; i += chunkSize) {
       const chunk = hotelIds.slice(i, i + chunkSize);
-      const response = await axios.get('https://test.api.amadeus.com/v3/shopping/hotel-offers', {
-        headers: { Authorization: `Bearer ${accessToken}` },
-        params: {
-          hotelIds: chunk.join(','), // Combine IDs into a comma-separated string
-          checkInDate,
-          checkOutDate,
-          adults: 1,
-        },
-      });
+      try {
+        const response = await axios.get('https://test.api.amadeus.com/v3/shopping/hotel-offers', {
+          headers: { Authorization: `Bearer ${accessToken}` },
+          params: {
+            hotelIds: chunk.join(','),
+            checkInDate,
+            checkOutDate,
+            adults: 1,
+          },
+        });
 
-      if (response.data && response.data.data) {
-        hotelOffers.push(
-          ...response.data.data.map((hotel) => ({
-            name: hotel.hotel.name,
-            checkIn: hotel.offers[0]?.checkInDate,
-            checkOut: hotel.offers[0]?.checkOutDate,
-            price: hotel.offers[0]?.price.total,
-            currency: hotel.offers[0]?.price.currency,
-          }))
-        );
+        if (response.data?.data) {
+          hotelOffers.push(
+            ...response.data.data.map((hotel) => ({
+              name: hotel.hotel.name,
+              checkIn: hotel.offers[0]?.checkInDate,
+              checkOut: hotel.offers[0]?.checkOutDate,
+              price: hotel.offers[0]?.price.total,
+              currency: hotel.offers[0]?.price.currency,
+            }))
+          );
+        }
+      } catch (chunkError) {
+        console.error(`Error processing chunk:`, chunk, chunkError.response?.data || chunkError.message);
+        errors.push({
+          chunk,
+          error: chunkError.response?.data || chunkError.message,
+        });
       }
+    }
+
+    if (errors.length) {
+      console.error('Partial errors occurred:', errors);
     }
 
     return hotelOffers;
