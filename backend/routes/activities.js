@@ -5,6 +5,8 @@ const GEOAPIFY_API_KEY = process.env.ACTIVITIES_API_KEY;
 
 router.get('/', async (req, res) => {
   const { city } = req.query;
+  console.log('Using API Key:', GEOAPIFY_API_KEY);
+
 
   if (!city) {
     return res.status(400).json({ error: 'City name is required' });

@@ -98,12 +98,11 @@ export default function Dashboard() {
         params.checkInDate = formatDate(checkInDate);
         params.checkOutDate = formatDate(checkOutDate);
       } else if (filter === 'activities') {
-        const cityCode = cityToIATA[city];
-        if (!cityCode) {
+        if (!city) {
           setValidationError('Selected city is not supported');
           return;
         }
-        params.cityCode = cityCode; // Use cityCode directly
+        params.city = city; // Use cityCode directly
       }
 
       const response = await axios.get(endpointMap[filter], { params });
